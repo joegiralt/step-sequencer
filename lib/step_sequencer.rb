@@ -24,13 +24,13 @@ module StepSequencer
   attr_accessor :halted, :halted_step, :halted_reason
 
   def halt_sequence!(reason)
-    @halted = true
+    @halted        = true
     @halted_reason = reason
   end
 
-  def start_sequence(initial_value)
+  def start_sequence(initial_value = nil)
     accumulator = initial_value
-    steps_list = self.class.steps
+    steps_list = [*self.class.steps, :terminus_of_sequence]
     steps_list.each_with_index do |step_name, idx|
       if @halted
         @halted_step = steps_list[idx - 1] # The step before the current one is the one that caused the halt
@@ -39,6 +39,7 @@ module StepSequencer
 
         return
       end
+      next if step_name == :terminus_of_sequence
 
       step_method = method(step_name)
       accumulator = step_method.arity.zero? ? step_method.call : step_method.call(accumulator)

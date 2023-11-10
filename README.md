@@ -67,7 +67,7 @@ DummyArithmeticService.new.start_sequence(100)
 => "multiplies_by_random_number_from_external_client: result from client isn't a number"
 ```
 
-It'll also catch errors.
+It'll also catch errors on any step.
 
 ```ruby
 class SomeService
@@ -76,7 +76,7 @@ class SomeService
   sequencer do
     step :some_faulty_step
     step :other_step
-    
+
     on_halt do |step, reason|
       "#{step}: #{reason}"
     end

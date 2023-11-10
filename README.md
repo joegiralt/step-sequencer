@@ -76,7 +76,7 @@ DummyArithmaticService.new.start_sequence(100)
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at [https://github.com/your-github-username/step_sequencer](https://github.com/your-github-username/step_sequencer). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](https://www.contributor-covenant.org/) code of conduct.
+Bug reports and pull requests are welcome. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to be excellent to each other.
 
 ## License
 

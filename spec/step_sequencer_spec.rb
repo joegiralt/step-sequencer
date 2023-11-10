@@ -1,121 +1,122 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
+
+class DummyOrderClass
+  include StepSequencer
+  sequencer do
+    step :pushes_1
+    step :pushes_2
+    step :pushes_3
+    step :pushes_4
+
+    on_halt do |step, reason|
+      "#{step}: #{reason}"
+    end
+  end
+
+  def pushes_1(list)
+    list.push(1)
+  end
+
+  def pushes_2(list)
+    list.push(2)
+  end
+
+  def pushes_3(list)
+    list.push(3)
+  end
+
+  def pushes_4(list)
+    list.push(4)
+  end
+end
+
+class DummyArithmeticClass
+  include StepSequencer
+
+  sequencer do
+    step :add_five
+    step :halts_if_greater_than_ten
+    step :subtract_three
+    step :multiply_by_two
+
+    on_halt do |step, reason|
+      "#{step}: #{reason}"
+    end
+  end
+
+  def add_five(num)
+    num + 5
+  end
+
+  def halts_if_greater_than_ten(num)
+    halt_sequence!('value is greater that 10') if num > 10
+
+    num
+  end
+
+  def subtract_three(num)
+    num - 3
+  end
+
+  def multiply_by_two(num)
+    num * 2
+  end
+end
+
+class DummyNoArityClass
+  include StepSequencer
+
+  sequencer do
+    step :adds_five_to_value
+    step :adds_ten_to_value
+    on_halt do |step, reason|
+      "#{step}: #{reason}"
+    end
+  end
+
+  attr_accessor :value
+
+  def initialize(value)
+    @value = value
+  end
+
+  def initialize(value)
+    @value = value
+  end
+
+  def adds_five_to_value
+    @value += 5
+    @value
+  end
+
+  def adds_ten_to_value
+    @value += 10
+    @value
+  end
+end
+
+class DummyHaltOnLastStep
+  include StepSequencer
+
+  sequencer do
+    step :foo
+    step :halts_last_step
+    on_halt do |step, _reason|
+      step
+    end
+  end
+
+  def foo; end
+
+  def halts_last_step
+    halt_sequence!({ error: 'some random error on final step' })
+  end
+end
 
 RSpec.describe StepSequencer do
   # Dummy class for testing purposes
-
-  class DummyOrderClass
-    include StepSequencer
-    sequencer do
-      step :pushes_1
-      step :pushes_2
-      step :pushes_3
-      step :pushes_4
-
-      on_halt do |step, reason|
-        "#{step}: #{reason}"
-      end
-    end
-
-    def pushes_1(list)
-      list.push(1)
-    end
-
-    def pushes_2(list)
-      list.push(2)
-    end
-
-    def pushes_3(list)
-      list.push(3)
-    end
-
-    def pushes_4(list)
-      list.push(4)
-    end
-  end
-
-  class DummyArithmeticClass
-    include StepSequencer
-
-    sequencer do
-      step :add_five
-      step :halts_if_greater_than_ten
-      step :subtract_three
-      step :multiply_by_two
-
-      on_halt do |step, reason|
-        "#{step}: #{reason}"
-      end
-    end
-
-    def add_five(num)
-      num + 5
-    end
-
-    def halts_if_greater_than_ten(num)
-      halt_sequence!('value is greater that 10') if num > 10
-
-      num
-    end
-
-    def subtract_three(num)
-      num - 3
-    end
-
-    def multiply_by_two(num)
-      num * 2
-    end
-  end
-
-  class DummyNoArityClass
-    include StepSequencer
-
-    sequencer do
-      step :adds_five_to_value
-      step :adds_ten_to_value
-      on_halt do |step, reason|
-        "#{step}: #{reason}"
-      end
-    end
-
-    attr_accessor :value
-
-    def initialize(value)
-      @value = value
-    end
-
-    def initialize(value)
-      @value = value
-    end
-
-    def adds_five_to_value
-      @value += 5
-      @value
-    end
-
-    def adds_ten_to_value
-      @value += 10
-      @value
-    end
-  end
-
-  class DummyHaltOnLastStep
-    include StepSequencer
-
-    sequencer do
-      step :foo
-      step :halts_last_step
-      on_halt do |step, _reason|
-        step
-      end
-    end
-
-    def foo; end
-
-    def halts_last_step
-      halt_sequence!({ error: 'some random error on final step' })
-    end
-  end
-
   let(:initial_value) { 5 }
   let(:order_instance) { DummyOrderClass.new }
   let(:arithmetic_instance) { DummyArithmeticClass.new }

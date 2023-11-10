@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require_relative 'lib/step_sequencer/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = 'step-sequencer'
+  gem.name          = 'step-sequencer-work-flow'
   gem.version       = StepSequencer::VERSION
   gem.authors       = ['Joseph Martin Giralt']
   gem.email         = ['joe.m.giralt+step-sequencer@gmail.com']
@@ -27,9 +29,9 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
-  gem.extra_rdoc_files = [
-    'README.adoc'
-  ]
+  # gem.extra_rdoc_files = [
+  #   'README.adoc'
+  # ]
 
   gem.required_ruby_version = '>= 2.6.6'
   # gem.add_development_dependency 'rdoc',          '~> 6.1'

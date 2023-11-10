@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    step-sequencer (0.1.0)
+    step-sequencer-work-flow (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -53,7 +53,7 @@ DEPENDENCIES
   pry
   rspec
   rubocop
-  step-sequencer!
+  step-sequencer-work-flow!
 
 BUNDLED WITH
    2.3.17

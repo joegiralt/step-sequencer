@@ -7,7 +7,7 @@ StepSequencer is a Ruby gem providing a lightweight, intuitive DSL for defining 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'step-sequencer'
+gem 'step-sequencer-work-flow'
 ```
 
 And then execute:
@@ -19,7 +19,7 @@ $ bundle install
 Or install it yourself as:
 
 ```bash
-$ gem install step-sequencer
+$ gem install step-sequencer-work-flow
 ```
 ## Features
 

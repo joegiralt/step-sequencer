@@ -14,7 +14,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-# spec/spec_helper.rb
+# frozen_string_literal: true
 
 require 'step_sequencer'
 require 'pry'

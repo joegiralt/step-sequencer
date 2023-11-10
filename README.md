@@ -121,8 +121,9 @@ class UserRegistration
     step :log_registration
     on_halt do |step, reason|
       puts "Registration halted at '#{step}' due to: #{reason}"
-      # Here teh developer could define what to do when the sequence halts,
+      # Here the developer could define what to do when the sequence halts,
       # like cleaning up resources or alerting administrators.
+      # or pass the data from that step to this handler via the `reason`.
     end
   end
 
@@ -184,7 +185,7 @@ class DataPipeline
     on_halt do |step, reason|
       puts "Data pipeline halted at '#{step}' due to: #{reason}"
       # Implement logging or notification logic here.
-      # perhaps backtracking or data clean up logic
+      # perhaps backtracking or data clean up bad data.
     end
   end
 

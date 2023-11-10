@@ -27,12 +27,12 @@ $ gem install step-sequencer
 To integrate StepSequencer into your Ruby application, you will need to require the gem and then create sequences. Here's how it could look:
 
 ```ruby
-class DummyArithmaticService
+class DummyArithmeticService
   include StepSequencer
 
   sequencer do
     step :adds_five
-    step :multiplys_by_random_number_from_external_client
+    step :multiplies_by_random_number_from_external_client
     step :subtracts_three
 
     on_halt do |reason|
@@ -59,11 +59,11 @@ end
 
 # Usage
 # happy path
-DummyArithmaticService.new.start_sequence(100)
+DummyArithmeticService.new.start_sequence(100)
 => 734676 # some number
 
 # Unhappy path
-DummyArithmaticService.new.start_sequence(100)
+DummyArithmeticService.new.start_sequence(100)
 => "result from client isn't a number"
 ```
 

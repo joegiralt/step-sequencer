@@ -1,4 +1,6 @@
-# StepSequencer Gem
+# StepSequencer
+
+![Step Sequencer](img/step-sequencer.png)
 
 StepSequencer is a Ruby gem providing a lightweight, intuitive DSL for defining and orchestrating a sequence of operations, also known as a workflow. Inspired by the functionality of musical sequencers, StepSequencer allows developers to chain together a series of steps that are executed in order, with the capability to halt the sequence based on custom conditions. This gem is particularly useful for scenarios where a set of tasks must be performed in a specific sequence, and where each task might depend on the outcome of the previous one.
 

@@ -90,6 +90,70 @@ end
 SomeService.new.start_sequence(:hi)
 => "some_faulty_step: StandardError"
 ```
+Here's what it could look like in a real application
+
+```ruby
+require 'step_sequencer'
+
+class UserRegistration
+  include StepSequencer
+
+  attr_reader :user_data, :user
+
+  def initialize(user_data)
+    @user_data = user_data
+  end
+
+  sequencer do
+    step :validate_input
+    step :check_user_exists
+    step :send_verification_email
+    step :log_registration
+    on_halt do |step, reason|
+      puts "Registration halted at '#{step}' due to: #{reason}"
+      # Here teh developer could define what to do when the sequence halts,
+      # like cleaning up resources or alerting administrators.
+    end
+  end
+
+  def start
+    start_sequence(user_data)
+  end
+
+  private
+
+  def validate_input(data)
+    # Validate user input...
+    halt_sequence!('Invalid input') unless data[:email].match?(/\A[^@\s]+@[^@\s]+\z/)
+    data
+  end
+
+  def check_user_exists(data)
+    # Check if user exists...
+    halt_sequence!('User already exists') if User.exists?(email: data[:email])
+    data
+  end
+
+  def send_verification_email(data)
+    # Send email...
+    UserMailer.verification_email(data[:email]).deliver_now
+    data
+  end
+
+  def log_registration(data)
+    # Log registration...
+    RegistrationLog.create!(user_data: data)
+    data
+  end
+end
+
+# Usage
+user_data = { name: 'Jane Doe', email: 'jane.doe@example.com' }
+registration = UserRegistration.new(user_data)
+registration.start
+
+```
+
 
 
 ## Features

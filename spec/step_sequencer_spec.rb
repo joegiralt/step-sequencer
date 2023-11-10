@@ -2,6 +2,37 @@ require 'spec_helper'
 
 RSpec.describe StepSequencer do
   # Dummy class for testing purposes
+
+  class DummyOrderClass
+    include StepSequencer
+    sequencer do
+      step :pushes_1
+      step :pushes_2
+      step :pushes_3
+      step :pushes_4
+
+      on_halt do |step, reason|
+        "#{step}: #{reason}"
+      end
+    end
+
+    def pushes_1(list)
+      list.push(1)
+    end
+
+    def pushes_2(list)
+      list.push(2)
+    end
+
+    def pushes_3(list)
+      list.push(3)
+    end
+
+    def pushes_4(list)
+      list.push(4)
+    end
+  end
+
   class DummyArithmeticClass
     include StepSequencer
 
@@ -86,15 +117,16 @@ RSpec.describe StepSequencer do
   end
 
   let(:initial_value) { 5 }
+  let(:order_instance) { DummyOrderClass.new }
   let(:arithmetic_instance) { DummyArithmeticClass.new }
   let(:no_arity_instance) { DummyNoArityClass.new(initial_value) }
   let(:halt_on_last_step_instance) { DummyHaltOnLastStep.new }
 
   describe '#start_sequence' do
     it 'executes the steps in the correct order' do
-      result = arithmetic_instance.start_sequence(initial_value)
+      result = order_instance.start_sequence([])
 
-      expect(result).to eq(14)
+      expect(result).to eq([1, 2, 3, 4])
     end
 
     context 'when a step expliicitly halts the sequence' do

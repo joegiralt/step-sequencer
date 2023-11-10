@@ -13,16 +13,23 @@ RSpec.describe StepSequencer do
 
     sequencer do
       step :add_five
+      step :halts_if_greater_than_ten
       step :subtract_three
       step :multiply_by_two
 
-      on_halt do |reason|
-        reason
+      on_halt do |step, reason|
+        "#{step}: #{reason}"
       end
     end
 
     def add_five(num)
       num + 5
+    end
+
+    def halts_if_greater_than_ten(num)
+      halt_sequence!('value is greater that 10') if num > 10
+
+      num
     end
 
     def subtract_three(num)
@@ -34,63 +41,30 @@ RSpec.describe StepSequencer do
     end
   end
 
-  let(:initial_value) { 10 }
+  let(:initial_value) { 2 }
   let(:dummy_instance) { DummyClass.new(initial_value) }
 
   describe '#start_sequence' do
     it 'executes the steps in the correct order' do
       result = dummy_instance.start_sequence(initial_value)
       # The expected result after sequence: ((10 + 5) - 3) * 2
-      expect(result).to eq(24)
+      expect(result).to eq(8)
     end
 
-    context 'when a step halts the sequence' do
+    context 'when a step expliicitly halts teh sequence' do
+      it 'stops the sequence at the specified step' do
+        expect(dummy_instance.start_sequence(11)).to eq('halts_if_greater_than_ten: value is greater that 10')
+      end
+    end
+
+    context 'when a step throws an error' do
       before do
         allow(dummy_instance).to receive(:subtract_three).and_throw(:foo)
       end
 
       it 'stops the sequence at the specified step' do
-        expect(dummy_instance.start_sequence(initial_value)).to eq('uncaught throw :foo')
+        expect(dummy_instance.start_sequence(initial_value)).to eq('halts_if_greater_than_ten: uncaught throw :foo')
       end
     end
   end
 end
-
-# class DummyClass
-#   include StepSequencer
-
-#   sequencer do
-#     step :add_five
-#     step :subtract_three
-#     step :multiply_by_two
-
-#     on_halt do |reason|
-#       puts reason
-#       :test_halt
-#     end
-#   end
-
-#   def initialize
-#     # nothing here
-#   end
-
-#   def add_five(num)
-#     value + 5
-#   end
-
-#   def subtract_three(num)
-#     value - 3
-#   end
-
-#   def multiply_by_two(num)
-#     value * 2
-#   end
-# end
-
-# # When called
-# DummyClass.new.start_sequence(10)
-# => 24
-
-# # if subtract_three throws an error for some reason
-# DummyClass.new.start_sequence(10)
-# => :test_halt

@@ -61,7 +61,7 @@ class DummyArithmeticService
   def multiplies_random_number_from_external_client(num)
     result = SomeClient.new.get_random_number * num
     
-    halt_sequence("result from client isn't a number") unless result.is_a?(Numeric)
+    halt_sequence!("result from client isn't a number") unless result.is_a?(Numeric)
 
     result
   end

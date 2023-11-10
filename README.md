@@ -236,7 +236,7 @@ data_pipeline.run
 
 When using StepSequencer, it's important to understand how it handles methods with different numbers of arguments (referred to as "arity"). This can affect the behavior of your sequence in significant ways:
 
-# Methods with Arity (Methods that Accept Arguments)
+### Methods with Arity (Methods that Accept Arguments)
 - Single Argument: If a method is defined to take a single argument, the StepSequencer will pass the result of the previous step to it. This allows for a chain of data transformation where each step receives the output of the last, and uses it to produce its own output.
 
 ```ruby
@@ -248,7 +248,7 @@ end
 ```
 - Multiple Arguments: If a method is defined to take multiple arguments, you must manually manage how it is called within the sequence. StepSequencer does not automatically handle methods that expect more than one argument.
 
-# Methods Without Arity (Parameterless Methods)
+### Methods Without Arity (Parameterless Methods)
 - These methods do not accept any arguments and are called without passing the result of the previous step. They're useful for executing actions that don't need input from preceding steps, like logging or sending notifications. However, they won't automatically receive the accumulator from the previous step.
 ```ruby
 def parameterless_step
@@ -256,14 +256,14 @@ def parameterless_step
   perform_independent_action
 end
 ```
-# Behavior in Sequences
+### Behavior in Sequences
 - When defining a sequence, it is crucial to be aware of each method's arity to ensure they are used correctly within the sequence. If a method with arity is defined without providing the necessary arguments, or if a method without arity is expected to receive arguments, it may result in an error.
 
-# Halting Sequences
+### Halting Sequences
 - The halt_sequence! method is designed to halt the execution of a sequence. This method should be used within the steps where a condition might require the sequence to stop immediately. When halt_sequence! is invoked, it sets a flag that the sequence checks after each step. If the flag is set, the sequence stops, and the on_halt block is called with the reason for the halt.
 - it is important to note that the halt_sequence! method does not take into account the arity of the steps. It simply stops the sequence regardless of the steps' design.
 
-# Recommendations
+### Recommendations
 - It is recommended to design your sequence steps with a consistent approach to argument passing. If a step's output is not relevant to the next step, consider restructuring your workflow or explicitly managing the flow of data between steps.
 
 ## Contributing

@@ -21,6 +21,14 @@ Or install it yourself as:
 ```bash
 $ gem install step-sequencer
 ```
+## Features
+
+- Intuitive DSL for defining sequences.
+- Execute steps in a controlled order.
+- Sequences can be trivally be short circuited.
+- Conditional execution of steps based on custom logic.
+- Easy to integrate with existing Ruby applications.
+- Zero dependencies.
 
 ## Usage
 
@@ -153,15 +161,110 @@ registration = UserRegistration.new(user_data)
 registration.start
 
 ```
+Here's an example where it's doing very simple ETL
+```ruby
+require 'step_sequencer'
+require 'http'
+require 'json'
 
+class DataPipeline
+  include StepSequencer
 
+  API_ENDPOINT = 'https://api.example.com/data'
+  REPORT_PATH = '/path/to/reports'
 
-## Features
+  sequencer do
+    step :fetch_data
+    step :transform_data
+    step :save_data
+    step :generate_report
+    step :send_notification
+    on_halt do |step, reason|
+      puts "Data pipeline halted at '#{step}' due to: #{reason}"
+      # Implement logging or notification logic here.
+      # perhaps backtracking or data clean up logic
+    end
+  end
 
-- Intuitive DSL for defining sequences.
-- Execute steps in a controlled order.
-- Conditional execution of steps based on custom logic.
-- Easy to integrate with existing Ruby applications.
+  def run
+    start_sequence(nil) # Initial value is not used in this case.
+  end
+
+  private
+
+  def fetch_data(_)
+    response = HTTP.get(API_ENDPOINT)
+    halt_sequence!('Failed to fetch data') unless response.status.success?
+    JSON.parse(response.to_s)
+  end
+
+  def transform_data(raw_data)
+    # Perform data transformation...
+    transformed_data = raw_data.map do |entry|
+      # Transformation logic here.
+    end
+    halt_sequence!('Data transformation failed') if transformed_data.empty?
+    transformed_data
+  end
+
+  def save_data(transformed_data)
+    # Save data to database...
+    halt_sequence!('Failed to save data') unless Database.save(transformed_data)
+    transformed_data
+  end
+
+  def generate_report(data)
+    # Generate report from data...
+    report = ReportGenerator.new(data)
+    halt_sequence!('Report generation failed') unless report.generate(REPORT_PATH)
+    report
+  end
+
+  def send_notification(report)
+    # Send notification email...
+    NotificationMailer.report_ready(report).deliver_now
+    report
+  end
+end
+
+# Usage
+data_pipeline = DataPipeline.new
+data_pipeline.run
+
+```
+## Caveats
+
+When using StepSequencer, it's important to understand how it handles methods with different numbers of arguments (referred to as "arity"). This can affect the behavior of your sequence in significant ways:
+
+# Methods with Arity (Methods that Accept Arguments)
+- Single Argument: If a method is defined to take a single argument, the StepSequencer will pass the result of the previous step to it. This allows for a chain of data transformation where each step receives the output of the last, and uses it to produce its own output.
+
+```ruby
+def step_method(accumulator)
+  # The accumulator is the result from the previous step
+  transformed_data = some_transformation(accumulator)
+  transformed_data # This will be passed to the next step
+end
+```
+- Multiple Arguments: If a method is defined to take multiple arguments, you must manually manage how it is called within the sequence. StepSequencer does not automatically handle methods that expect more than one argument.
+
+# Methods Without Arity (Parameterless Methods)
+- These methods do not accept any arguments and are called without passing the result of the previous step. They're useful for executing actions that don't need input from preceding steps, like logging or sending notifications. However, they won't automatically receive the accumulator from the previous step.
+```ruby
+def parameterless_step
+  # Perform an action that does not depend on the previous step's output
+  perform_independent_action
+end
+```
+# Behavior in Sequences
+- When defining a sequence, it is crucial to be aware of each method's arity to ensure they are used correctly within the sequence. If a method with arity is defined without providing the necessary arguments, or if a method without arity is expected to receive arguments, it may result in an error.
+
+# Halting Sequences
+- The halt_sequence! method is designed to halt the execution of a sequence. This method should be used within the steps where a condition might require the sequence to stop immediately. When halt_sequence! is invoked, it sets a flag that the sequence checks after each step. If the flag is set, the sequence stops, and the on_halt block is called with the reason for the halt.
+- it is important to note that the halt_sequence! method does not take into account the arity of the steps. It simply stops the sequence regardless of the steps' design.
+
+# Recommendations
+- It is recommended to design your sequence steps with a consistent approach to argument passing. If a step's output is not relevant to the next step, consider restructuring your workflow or explicitly managing the flow of data between steps.
 
 ## Contributing
 

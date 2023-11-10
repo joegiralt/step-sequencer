@@ -35,8 +35,8 @@ class DummyArithmeticService
     step :multiplies_by_random_number_from_external_client
     step :subtracts_three
 
-    on_halt do |reason|
-      reason
+    on_halt do |step, reason|
+      "#{step}: #{reason}"
     end
   end
 
@@ -64,8 +64,33 @@ DummyArithmeticService.new.start_sequence(100)
 
 # Unhappy path
 DummyArithmeticService.new.start_sequence(100)
-=> "result from client isn't a number"
+=> "multiplies_by_random_number_from_external_client: result from client isn't a number"
 ```
+
+It'll also catch errors.
+
+```ruby
+class SomeService
+  include StepSequencer
+
+  sequencer do
+    step :some_faulty_step
+    step :other_step
+    
+    on_halt do |step, reason|
+      "#{step}: #{reason}"
+    end
+  end
+
+  def some_faulty_step(value)
+    raise StandardError
+  end
+end
+
+SomeService.new.start_sequence(:hi)
+=> "some_faulty_step: StandardError"
+```
+
 
 ## Features
 

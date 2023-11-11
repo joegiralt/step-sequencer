@@ -1,6 +1,8 @@
 version: '2.1'
+
 orbs:
   codecov: codecov/codecov@3.2.5
+
 jobs:
   build:
     docker:
@@ -29,12 +31,11 @@ jobs:
           name: Run Tests
           command: bundle exec rspec
 
+      - codecov/upload:
+          file: <path_to_coverage_report> # Replace with actual path to your coverage report
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-  upload-to-codecov:
-    jobs:
-      - checkout
-      - codecov/upload

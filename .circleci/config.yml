@@ -32,7 +32,7 @@ jobs:
           command: bundle exec rspec
 
       - codecov/upload:
-          file: <path_to_coverage_report> # Replace with actual path to your coverage report
+          file: coverage/.resultset.json
 
 workflows:
   version: 2

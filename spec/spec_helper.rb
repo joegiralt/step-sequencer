@@ -16,8 +16,13 @@
 
 # frozen_string_literal: true
 
-require 'step_sequencer'
 require 'pry'
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/spec/'
+end
+
+require 'step_sequencer'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

@@ -9,6 +9,7 @@ GEM
     ast (2.4.2)
     coderay (1.1.2)
     diff-lcs (1.5.0)
+    docile (1.4.0)
     method_source (0.9.2)
     parallel (1.22.1)
     parser (3.1.2.1)
@@ -44,6 +45,12 @@ GEM
     rubocop-ast (1.21.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.12.3)
+    simplecov_json_formatter (0.1.4)
     unicode-display_width (2.3.0)
 
 PLATFORMS
@@ -53,6 +60,7 @@ DEPENDENCIES
   pry
   rspec
   rubocop
+  simplecov
   step-sequencer-work-flow!
 
 BUNDLED WITH

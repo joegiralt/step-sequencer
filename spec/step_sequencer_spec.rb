@@ -115,6 +115,32 @@ class DummyHaltOnLastStep
   end
 end
 
+class DummyNoOnHaltHandler
+  include StepSequencer
+
+  sequencer do
+    step :some_step
+  end
+
+  def some_step
+    halt_sequence!({ random_key: 'user defined halt reason passed to halt_sequence!' })
+  end
+end
+
+class DummyMissingStep
+  include StepSequencer
+
+  sequencer do
+    step :missing_method_step
+    step :some_other_step
+  end
+
+  def some_other_step; end
+
+  # missing step :p
+  # def missing_method_step; end
+end
+
 RSpec.describe StepSequencer do
   # Dummy class for testing purposes
   let(:initial_value) { 5 }
@@ -122,6 +148,8 @@ RSpec.describe StepSequencer do
   let(:arithmetic_instance) { DummyArithmeticClass.new }
   let(:no_arity_instance) { DummyNoArityClass.new(initial_value) }
   let(:halt_on_last_step_instance) { DummyHaltOnLastStep.new }
+  let(:no_halt_handler_instance) { DummyNoOnHaltHandler.new }
+  let(:missing_step_instance) { DummyMissingStep.new }
 
   describe '#start_sequence' do
     it 'executes the steps in the correct order' do
@@ -130,13 +158,27 @@ RSpec.describe StepSequencer do
       expect(result).to eq([1, 2, 3, 4])
     end
 
-    context 'when a step expliicitly halts the sequence' do
+    context 'when a step canexplicitly halt the sequence' do
       it 'stops the sequence at the specified step' do
         expect(arithmetic_instance.start_sequence(11)).to eq('halts_if_greater_than_ten: value is greater that 10')
       end
 
+      it 'executes the entire sequence' do
+        expect(arithmetic_instance.start_sequence(1)).to eq(6)
+      end
+
       it 'stops the sequence at the specified step and its the last step' do
         expect(halt_on_last_step_instance.start_sequence).to eq(:halts_last_step)
+      end
+
+      it 'halts the sequence and measures halt status' do
+        halt_on_last_step_instance.start_sequence
+        expect(halt_on_last_step_instance.halted).to be(true)
+      end
+
+      it 'halts the sequence with the specified reason' do
+        halt_on_last_step_instance.start_sequence
+        expect(halt_on_last_step_instance.halted_reason).to eq({ error: 'some random error on final step' })
       end
     end
 
@@ -155,6 +197,26 @@ RSpec.describe StepSequencer do
     it 'plays entire sequence of steps' do
       no_arity_instance
       expect(no_arity_instance.start_sequence).to eq(20)
+    end
+
+    it 'has the same value as the instance var store' do
+      expect(no_arity_instance.start_sequence).to eq(no_arity_instance.value)
+    end
+  end
+
+  context 'when theres no halt_handler configured' do
+    it 'defaults to default halt_handler' do
+      expect(no_halt_handler_instance.start_sequence).to eq({ some_step: { random_key: 'user defined halt reason passed to halt_sequence!' } })
+    end
+  end
+
+  context 'when a step isnt configured' do
+    it 'throws a NoMethodError Exception' do
+      expect { missing_step_instance.start_sequence }.to raise_error(NoMethodError)
+    end
+
+    it 'throws a NoMethodError Exception with correct message' do
+      expect { missing_step_instance.start_sequence }.to raise_error(NoMethodError, 'Method `missing_method_step` is not defined for DummyMissingStep used in steps')
     end
   end
 end

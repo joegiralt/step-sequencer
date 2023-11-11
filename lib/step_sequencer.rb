@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module StepSequencer
+  class NoHaltHandlerConfigured < StandardError; end
+
   def self.included(base)
     base.extend ClassMethods
   end
@@ -10,7 +12,10 @@ module StepSequencer
 
     def sequencer(&block)
       @steps = []
-      @halt_handler = proc { |step, reason| puts "Halting at '#{step}': #{reason}" }
+      @halt_handler = proc do |step, reason|
+        puts "No halt handler configured for #{self.class.name}"
+        { step => reason }
+      end
       instance_eval(&block)
     end
 
@@ -37,14 +42,20 @@ module StepSequencer
       if @halted
         @halted_step = steps_list[idx - 1] # The step before the current one is the one that caused the halt
         # Yield to the on_halt block with the step and reason
-        return self.class.halt_handler.call(@halted_step, @halted_reason) if self.class.halt_handler
+        return self.class.halt_handler.call(@halted_step, @halted_reason)
 
-        return
       end
       next if step_name == :terminus_of_sequence
 
+      # Verify if the step method exists
+      unless respond_to?(step_name)
+        raise NoMethodError, "Method `#{step_name}` is not defined for #{self.class.name} used in steps"
+      end
+
       step_method = method(step_name)
       accumulator = step_method.arity.zero? ? step_method.call : step_method.call(accumulator)
+    rescue NoMethodError => e
+      raise # Re-raise NoMethodError to avoid catching it with StandardError
     rescue StandardError => e
       halt_sequence!(e.message) # Call halt_sequence! with the exception message
       retry # Restart the loop to handle the halt

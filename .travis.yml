@@ -1,0 +1,14 @@
+language: ruby
+rvm:
+  - 2.6.6
+  - 3.2
+script:
+  - bundle install
+  - bundle exec rubocop
+  - bundle exec rspec
+notifications:
+  email:
+    recipients:
+      - joe.m.giralt+step-sequencer@gmail.com
+    on_success: never # default: change
+    on_failure: always # default: always

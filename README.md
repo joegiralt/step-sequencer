@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/joegiralt/step-sequencer/tree/main.svg?style=svg)](https://circleci.com/gh/joegiralt/step-sequencer/tree/main)
 # StepSequencer
 
 ![Step Sequencer](img/step-sequencer.png)

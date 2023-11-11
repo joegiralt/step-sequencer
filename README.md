@@ -37,6 +37,8 @@ $ gem install step-sequencer-work-flow
 To integrate StepSequencer into your Ruby application, you will need to require the gem and then create sequences. Here's how it could look:
 
 ```ruby
+require 'step_sequencer'
+
 class DummyArithmeticService
   include StepSequencer
 
@@ -80,6 +82,8 @@ DummyArithmeticService.new.start_sequence(100)
 It'll also catch errors on any step.
 
 ```ruby
+require 'step_sequencer'
+
 class SomeService
   include StepSequencer
 
@@ -115,10 +119,10 @@ class UserRegistration
   end
 
   sequencer do
-    step :validate_input
-    step :check_user_exists
-    step :send_verification_email
-    step :log_registration
+    step :validates_input
+    step :checks_user_exists
+    step :sends_verification_email
+    step :logs_registration
     on_halt do |step, reason|
       puts "Registration halted at '#{step}' due to: #{reason}"
       # Here the developer could define what to do when the sequence halts,
@@ -133,25 +137,25 @@ class UserRegistration
 
   private
 
-  def validate_input(data)
+  def validates_input(data)
     # Validate user input...
     halt_sequence!('Invalid input') unless data[:email].match?(/\A[^@\s]+@[^@\s]+\z/)
     data
   end
 
-  def check_user_exists(data)
+  def checks_user_exists(data)
     # Check if user exists...
     halt_sequence!('User already exists') if User.exists?(email: data[:email])
     data
   end
 
-  def send_verification_email(data)
+  def sends_verification_email(data)
     # Send email...
     UserMailer.verification_email(data[:email]).deliver_now
     data
   end
 
-  def log_registration(data)
+  def logs_registration(data)
     # Log registration...
     RegistrationLog.create!(user_data: data)
     data
@@ -177,11 +181,11 @@ class DataPipeline
   REPORT_PATH = '/path/to/reports'
 
   sequencer do
-    step :fetch_data
-    step :transform_data
-    step :save_data
-    step :generate_report
-    step :send_notification
+    step :fetches_data
+    step :transforms_data
+    step :saves_data
+    step :generates_report
+    step :sends_notification
     on_halt do |step, reason|
       puts "Data pipeline halted at '#{step}' due to: #{reason}"
       # Implement logging or notification logic here.
@@ -195,13 +199,13 @@ class DataPipeline
 
   private
 
-  def fetch_data(_)
+  def fetches_data(_)
     response = HTTP.get(API_ENDPOINT)
     halt_sequence!('Failed to fetch data') unless response.status.success?
     JSON.parse(response.to_s)
   end
 
-  def transform_data(raw_data)
+  def transforms_data(raw_data)
     # Perform data transformation...
     transformed_data = raw_data.map do |entry|
       # Transformation logic here.
@@ -210,20 +214,20 @@ class DataPipeline
     transformed_data
   end
 
-  def save_data(transformed_data)
+  def saves_data(transformed_data)
     # Save data to database...
     halt_sequence!('Failed to save data') unless Database.save(transformed_data)
     transformed_data
   end
 
-  def generate_report(data)
+  def generates_report(data)
     # Generate report from data...
     report = ReportGenerator.new(data)
     halt_sequence!('Report generation failed') unless report.generate(REPORT_PATH)
     report
   end
 
-  def send_notification(report)
+  def sends_notification(report)
     # Send notification email...
     NotificationMailer.report_ready(report).deliver_now
     report

@@ -32,6 +32,7 @@ $ gem install step-sequencer-work-flow
 - Sequences can be trivally be short circuited.
 - Conditional execution of steps based on custom logic.
 - Easy to integrate with existing Ruby applications.
+- No need to wrap and unwrap the result like in other Monadic ruby gems.
 - Zero dependencies.
 
 ## Usage

@@ -1,6 +1,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/8CPt6Mv94pfXo9ZdEYMK6x/1brR2pChhaaUpETXcpVTR/tree/main.svg?style=svg&circle-token=4eb1234d7d4bc8fa1641fcdd02b41f82d0295986)](https://dl.circleci.com/status-badge/redirect/circleci/8CPt6Mv94pfXo9ZdEYMK6x/1brR2pChhaaUpETXcpVTR/tree/main)
 [![codecov](https://codecov.io/gh/joegiralt/step-sequencer/graph/badge.svg?token=ps0Jnbsy5x)](https://codecov.io/gh/joegiralt/step-sequencer)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjoegiralt%2Fstep-sequencer.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjoegiralt%2Fstep-sequencer?ref=badge_shield&issueType=license)
+
 # StepSequencer
 
 ![Step Sequencer](img/step-sequencer.png)
